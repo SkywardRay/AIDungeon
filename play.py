@@ -155,6 +155,10 @@ def play_aidungeon_2():
                 else:
                     console_print(story_manager.story.story_start)
                 continue
+                
+            elif len(action.split(" ")) >= 2 and action.split(" ")[0] == "query":
+                question = action.split(" ", 1)[1]
+                console_print(story_manager.generate_result(question))
 
             else:
                 if action == "":

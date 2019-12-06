@@ -186,7 +186,7 @@ class UnconstrainedStoryManager(StoryManager):
         return result
 
     def generate_result(self, action):
-        block = self.generator.generate(self.story_context() + action,debug_print=self.debug_print)
+        block = self.generator.generate(self.story_context() + action, debug_print=self.debug_print)
         return block
 
 

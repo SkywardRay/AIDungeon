@@ -166,8 +166,12 @@ def play_aidungeon_2():
                 question = first_to_second_person(question)
                 question = "\nQ: " + question + "\n"
                 answer = story_manager.generate_result(question)  # gonna be a bunch of alternating Q: A: lines
-                console_print(answer.strip().split("\n")[0])
+                answer = answer.strip().split("\n")[0]
+                console_print(answer)
 
+            elif len(action.split()) >= 2 and action.split()[0] == "debug":
+                answer = story_manager.generate_result(action.split(maxsplit=1)[1])
+                console_print(answer)
             else:
                 if action == "":
                     action = ""

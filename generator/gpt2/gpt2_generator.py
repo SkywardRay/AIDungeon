@@ -10,7 +10,7 @@ import numpy as np
 
 class GPT2Generator:
 
-    def __init__(self,  generate_num=60, temperature=0.4, top_k=40, top_p=0.9):
+    def __init__(self,  generate_num=120, temperature=0.4, top_k=40, top_p=0.9):
         self.generate_num=generate_num
         self.temp = temperature
         self.top_k = top_k
@@ -89,7 +89,7 @@ class GPT2Generator:
         generated = 0
         for _ in range(self.samples // self.batch_size):
             out = self.sess.run(self.output, feed_dict={
-                self.context: [context_tokens for _ in range(self.batch_size)]
+                self.context: [context_tokens] * self.batch_size
             })[:, len(context_tokens):]
             for i in range(self.batch_size):
                 generated += 1

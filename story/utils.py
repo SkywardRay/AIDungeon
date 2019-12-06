@@ -1,12 +1,11 @@
  # coding: utf-8
 import re
-import yaml
 from difflib import SequenceMatcher
 
 YAML_FILE = "story/story_data.yaml"
 
-from profanityfilter import ProfanityFilter
-pf = ProfanityFilter()
+# from profanityfilter import ProfanityFilter
+# pf = ProfanityFilter()
 
 def console_print(text, width=75):
     last_newline = 0
@@ -64,8 +63,8 @@ def player_won(text):
             return True
     return False
 
-def remove_profanity(text):
-    return pf.censor(text)
+# def remove_profanity(text):
+#     return pf.censor(text)
 
 
 def cut_trailing_quotes(text):
@@ -272,7 +271,7 @@ if __name__ == '__main__':
     result = result.replace("#", "")
     result = result.replace("*", "")
     result = first_to_second_person(result)
-    result = remove_profanity(result)
+    # result = remove_profanity(result)
 
     while ("\n \n \n " in result):
         result = result.replace("\n \n \n ", "\n \n ")

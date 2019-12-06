@@ -1,6 +1,7 @@
 from story.story_manager import *
 from generator.gpt2.gpt2_generator import *
 from story.utils import *
+import yaml
 from termios import tcflush, TCIFLUSH
 import time, sys, os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"

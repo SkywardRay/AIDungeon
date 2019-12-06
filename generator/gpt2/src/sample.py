@@ -59,7 +59,7 @@ def top_p_logits(logits, p):
     )
 
 
-def sample_sequence(*, hparams, length, start_token=None, batch_size=None, context=None, temperature=1, top_k=0, top_p=1):
+def sample_sequence(hparams, length, start_token=None, batch_size=None, context=None, temperature=1, top_k=0, top_p=1):
     if start_token is None:
         assert context is not None, 'Specify exactly one of start_token and context!'
     else:

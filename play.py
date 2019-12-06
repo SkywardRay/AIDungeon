@@ -161,16 +161,20 @@ def play_aidungeon_2():
                     console_print(story_manager.story.story_start)
                 continue
 
-            elif len(action.split(" ")) >= 2 and action.split(" ")[0] == "query":
-                question = action.split(" ", 1)[1]
+            elif len(action.split()) >= 2 and action.split()[0] in ["query", "queryy"]:
+                queryy, question = action.split(maxsplit=1)
                 if question[-1] != '?':
                     question += '?'
-                question = first_to_second_person(question)
+                if queryy == "queryy":
+                    question = first_to_second_person(question)
+                else:
+                    question = capitalize_i(question)
                 question = "\nQ: " + question + "\n"
-                answer = story_manager.generate_result(question,
-                                                       use_top=True)  # gonna be a bunch of alternating Q: A: lines
-                answer = answer.strip().split("\n")[0]
-                console_print(answer)
+                answer = story_manager.generate_result(question, use_top=True)
+                answer = answer.strip().split("\n")[0]  # gonna be a bunch of alternating Q: A: lines
+                # if answer[:3] == "A: ":
+                #     answer = answer[3:]
+                console_print(question + answer)
 
             elif len(action.split()) >= 2 and action.split()[0] in ["debug", "debugt"]:
                 debugt, action = action.split(maxsplit=1)
@@ -179,28 +183,22 @@ def play_aidungeon_2():
                 answer = story_manager.generate_result(action, use_top=debugt == "debugt")
                 console_print(answer)
             else:
-                if action == "":
-                    pass
-
-                elif action[0] == '"':
-                    action = "You say " + action
-
-                else:
+                if action != "":
                     action = action[0].lower() + action[1:]
-
-                    # if "You" not in action[:6] and "I" not in action[:6]:
-                    if action[0:2].lower() != 'i ':
-                        action = "You " + action
-
+                    verb, rest = action.split(maxsplit=1)
+                    if action[0] == '"' or verb.lower() == "say" and rest[0] != '"':
+                        action = f'say "{rest}"'
+                    if action[0:2].lower() not in ['i ', "i'"]:  # don't input i
+                        action = "I " + action
                     action = first_to_second_person(action)
                     if args.inline:
                         action = "\n" + action
                     else:
                         if action[-1] not in [".", "?", "!"]:
                             action = action + "."
+                        action = f"\n> {action}\n"
 
-                        action = "\n> " + action + "\n"
-                        console_print(action)
+                    console_print(action)
                 # if args.debug:
                 #     console_print("\n******DEBUG FULL ACTION*******")
                 #     console_print(action)

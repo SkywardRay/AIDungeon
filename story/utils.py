@@ -241,7 +241,7 @@ def standardize_punctuation(text):
 
 
 def replace_outside_quotes(text, current_word, repl_word):
-    text = standardize_punctuation(text)
+    # text = standardize_punctuation(text)
 
     reg_expr = re.compile(f"(?<=\s){current_word}(?=[\s,.?!]|$)" + '(?=([^"]*"[^"]*")*[^"]*$)')
 
@@ -261,6 +261,13 @@ def first_to_second_person(text):
             #     print(variation, txt, text)
 
     return capitalize_first_letters(text[1:])
+
+
+def capitalize_i(text):
+    text = " " + text
+    reg_expr = re.compile("(?<=\s)i(?=[\s,.?!']|$)")
+    text = reg_expr.sub("I", text)
+    return text[1:]
 
 
 def second_to_first_person(text):

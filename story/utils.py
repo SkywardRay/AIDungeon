@@ -105,7 +105,7 @@ def result_replace(result):
     # print("\n\nBEFORE RESULT_REPLACE:")
     # print(repr(result))
 
-    result = cut_trailing_sentence(result)
+    result = cut_trailing_sentence(result.strip())
     if len(result) == 0:
         return ""
     first_letter_capitalized = result[0].isupper()
@@ -267,7 +267,7 @@ def capitalize_i(text):
     text = " " + text
     reg_expr = re.compile("(?<=\s)i(?=[\s,.?!']|$)")
     text = reg_expr.sub("I", text)
-    return text[1:]
+    return capitalize_first_letters(text[1:])
 
 
 def second_to_first_person(text):

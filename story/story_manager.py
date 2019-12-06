@@ -1,5 +1,5 @@
 from story.utils import *
-from other.cacher import Cacher
+# from other.cacher import Cacher
 import json
 import uuid
 from subprocess import Popen
@@ -30,7 +30,7 @@ class Story():
         if game_state is None:
             game_state = dict()
         self.game_state = game_state
-        self.memory = 20
+        self.memory = 20  # keep this many action-result pairs as context
 
     def __del__(self):
         if self.upload_story:
@@ -151,10 +151,10 @@ class Story():
 
 class StoryManager():
 
-    def __init__(self, generator: GPT2Generator,debug_print=False):
+    def __init__(self, generator: GPT2Generator, debug_print=False):
         self.generator = generator
         self.story = None
-        self.debug_print=debug_print
+        self.debug_print = debug_print
         
     def start_new_story(self, story_prompt, context="", game_state=None, upload_story=False):
         block = self.generator.generate(context + story_prompt,debug_print=self.debug_print)

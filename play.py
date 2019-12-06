@@ -2,9 +2,10 @@ from story.story_manager import *
 from generator.gpt2.gpt2_generator import *
 from story.utils import *
 import yaml
-from termios import tcflush, TCIFLUSH
+# from termios import tcflush, TCIFLUSH
 import time, sys, os
 import argparse
+import numpy as np
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
 def select_game():
@@ -39,7 +40,7 @@ def select_game():
         console_print(str(i) + ") " + character)
     character_key = list(characters)[get_num_options(len(characters))]
 
-    name = input("\nWhat is your name? ")
+    name = input("\nWhat is your name? ").title()
     setting_description = data["settings"][setting_key]["description"]
     character = data["settings"][setting_key]["characters"][character_key]
 
@@ -70,14 +71,14 @@ def play_aidungeon_2():
                   + " If you would like to disable this enter 'nosaving' for any action. This will also turn off the "
                   + "ability to save games.")
 
-    upload_story = True
+    upload_story = False
 
     print("\nInitializing AI Dungeon! (This might take a few minutes)\n")
-    generator = GPT2Generator()
-    story_manager = UnconstrainedStoryManager(generator,debug_print=args.debug)
+    generator = GPT2Generator(generate_num=args.len)
+    story_manager = UnconstrainedStoryManager(generator, debug_print=args.debug)
     print("\n")
 
-    with open('opening.txt', 'r') as file:
+    with open('opening.txt', 'r', encoding="utf-8") as file:
         starter = file.read()
     print(starter)
 
@@ -95,7 +96,8 @@ def play_aidungeon_2():
         print("\n")
         console_print(str(story_manager.story))
         while True:
-            tcflush(sys.stdin, TCIFLUSH)
+            # tcflush(sys.stdin, TCIFLUSH)
+            sys.stdin.flush()
             action = input("> ")
             if action == "restart":
                 rating = input("Please rate the story quality from 1-10: ")
@@ -125,7 +127,7 @@ def play_aidungeon_2():
                 else:
                     console_print("Saving has been turned off. Cannot save.")
 
-            elif action =="load":
+            elif action == "load":
                 load_ID = input("What is the ID of the saved game?")
                 result = story_manager.story.load_from_storage(load_ID)
                 console_print("\nLoading Game...\n")
@@ -143,7 +145,7 @@ def play_aidungeon_2():
 
             elif action == "revert":
 
-                if len(story_manager.story.actions) is 0:
+                if len(story_manager.story.actions) == 0:
                     console_print("You can't go back any farther. ")
                     continue
 
@@ -178,17 +180,17 @@ def play_aidungeon_2():
                     if "You" not in action[:6] and "I" not in action[:6]:
                         action = "You " + action
 
-                    if action[-1] not in [".", "?", "!"]:
-                        action = action + "."
+                    # if action[-1] not in [".", "?", "!"]:
+                    #     action = action + "."
 
                     action = first_to_second_person(action)
 
-                    action = "\n> " + action + "\n"
-                if args.debug:
-                    console_print("\n******DEBUG FULL ACTION*******")
-                    console_print(action)
-                    console_print("******END DEBUG******\n")
-                result = "\n" + story_manager.act(action)
+                    action = "\n> " + action
+                # if args.debug:
+                #     console_print("\n******DEBUG FULL ACTION*******")
+                #     console_print(action)
+                #     console_print("******END DEBUG******\n")
+                result = action + story_manager.act(action)
                 if len(story_manager.story.results) >= 2:
                     similarity = get_similarity(story_manager.story.results[-1], story_manager.story.results[-2])
                     if similarity > 0.9:
@@ -219,8 +221,9 @@ def play_aidungeon_2():
 
 
 if __name__ == '__main__':
-    args=argparse.ArgumentParser()
+    args = argparse.ArgumentParser()
     args.add_argument("--debug", action="store_true")
-    args=args.parse_args()
+    args.add_argument("--len", type=int, default=120)
+    args = args.parse_args()
     play_aidungeon_2()
 

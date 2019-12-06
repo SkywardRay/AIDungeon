@@ -40,7 +40,7 @@ def select_game():
         console_print(str(i) + ") " + character)
     character_key = list(characters)[get_num_options(len(characters))]
 
-    name = input("\nWhat is your name? ").title()
+    name = input("\nWhat is your name? ").title() or "Akababa"
     setting_description = data["settings"][setting_key]["description"]
     character = data["settings"][setting_key]["characters"][character_key]
 

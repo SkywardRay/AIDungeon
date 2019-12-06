@@ -15,7 +15,7 @@ class GPT2Generator:
         self.top_k = top_k
         self.top_p = top_p
 
-        self.model_name = "model_v5"
+        self.model_name = "model_v5_trt"
         self.model_dir = "generator/gpt2/models"
         self.checkpoint_path = os.path.join(self.model_dir, self.model_name)
 
@@ -52,38 +52,15 @@ class GPT2Generator:
         ckpt = tf.train.latest_checkpoint(os.path.join(models_dir, self.model_name))
         saver.restore(self.sess, ckpt)
 
-    def prompt_replace(self, prompt):
-        # print("\n\nBEFORE PROMPT_REPLACE:")
-        # print(repr(prompt))
-        if len(prompt) > 0 and prompt[-1] == " ":
-            prompt = prompt[:-1]
-
-        #prompt = second_to_first_person(prompt)
-        
-        # print("\n\nAFTER PROMPT_REPLACE")
-        # print(repr(prompt))
-        return prompt
-
     def generate_raw(self, prompt, use_top: bool):
         context_tokens = self.enc.encode(prompt)
         out = self.sess.run(self.top_output if use_top else self.output, feed_dict={
                 self.context: [context_tokens]
             })[0, len(context_tokens):]
         return self.enc.decode(out)
-        # generated = 0
-        # for _ in range(self.samples // self.batch_size):
-        #     out = self.sess.run(self.output, feed_dict={
-        #         self.context: [context_tokens] * self.batch_size
-        #     })[:, len(context_tokens):]
-        #     for i in range(self.batch_size):
-        #         generated += 1
-        #         text = self.enc.decode(out[i])
-        # return text
 
 
     def generate(self, prompt, debug_print=False, use_top=False):
-
-        # prompt = self.prompt_replace(prompt)
 
         if debug_print:
             print("******DEBUG******")

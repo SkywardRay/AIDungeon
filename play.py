@@ -2,11 +2,12 @@ from story.story_manager import *
 from generator.gpt2.gpt2_generator import *
 from story.utils import *
 import yaml
-# from termios import tcflush, TCIFLUSH
-import time, sys, os
+import sys, os
 import argparse
 import numpy as np
+
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+
 
 def select_game():
     with open(YAML_FILE, 'r') as stream:
@@ -21,10 +22,9 @@ def select_game():
 
         console_print(print_str)
     console_print(str(len(settings)) + ") custom")
-    choice = get_num_options(len(settings)+1)
+    choice = get_num_options(len(settings) + 1)
 
     if choice == len(settings):
-
         context = ""
         console_print("\nEnter a prompt that describes who you are and the first couple sentences of where you start "
                       "out ex:\n 'You are a knight in the kingdom of Larion. You are hunting the evil dragon who has been " +
@@ -51,6 +51,7 @@ def select_game():
 
     return context, prompt
 
+
 def instructions():
     text = "\nAI Dungeon 2 Instructions:"
     text += '\n Enter actions starting with a verb ex. "go to the tavern" or "attack the orc."'
@@ -65,8 +66,8 @@ def instructions():
     text += '\n  "help"     Prints these instructions again'
     return text
 
-def play_aidungeon_2():
 
+def play_aidungeon_2():
     console_print("AI Dungeon 2 will save and use your actions and game to continually improve AI Dungeon."
                   + " If you would like to disable this enter 'nosaving' for any action. This will also turn off the "
                   + "ability to save games.")
@@ -98,7 +99,7 @@ def play_aidungeon_2():
         while True:
             # tcflush(sys.stdin, TCIFLUSH)
             sys.stdin.flush()
-            action = input("> ")
+            action = input("> ").strip()
             if action == "restart":
                 rating = input("Please rate the story quality from 1-10: ")
                 rating_float = float(rating)
@@ -160,9 +161,12 @@ def play_aidungeon_2():
 
             elif len(action.split(" ")) >= 2 and action.split(" ")[0] == "query":
                 question = action.split(" ", 1)[1]
+                if question[-1] != '?':
+                    question += '?'
                 question = first_to_second_person(question)
-                question = "\n> " + question + "\n"
-                console_print(story_manager.generate_result(question))
+                question = "\nQ: " + question + "\n"
+                answer = story_manager.generate_result(question)  # gonna be a bunch of alternating Q: A: lines
+                console_print(answer.strip().split("\n")[0])
 
             else:
                 if action == "":
@@ -174,29 +178,35 @@ def play_aidungeon_2():
                     action = "You say " + action
 
                 else:
-                    action = action.strip()
                     action = action[0].lower() + action[1:]
 
-                    if "You" not in action[:6] and "I" not in action[:6]:
+                    # if "You" not in action[:6] and "I" not in action[:6]:
+                    if action[0:2].lower() != 'i ':
                         action = "You " + action
 
-                    # if action[-1] not in [".", "?", "!"]:
-                    #     action = action + "."
-
                     action = first_to_second_person(action)
+                    if args.inline:
+                        action = "\n" + action
+                    else:
+                        if action[-1] not in [".", "?", "!"]:
+                            action = action + "."
 
-                    action = "\n> " + action
+                        action = "\n> " + action + "\n"
+                        console_print(action)
                 # if args.debug:
                 #     console_print("\n******DEBUG FULL ACTION*******")
                 #     console_print(action)
                 #     console_print("******END DEBUG******\n")
-                result = action + story_manager.act(action)
+                result = story_manager.act(action)
+                if args.inline:
+                    result = action + result
                 if len(story_manager.story.results) >= 2:
                     similarity = get_similarity(story_manager.story.results[-1], story_manager.story.results[-2])
                     if similarity > 0.9:
                         story_manager.story.actions = story_manager.story.actions[:-1]
                         story_manager.story.results = story_manager.story.results[:-1]
-                        console_print("Woops that action caused the model to start looping. Try a different action to prevent that.")
+                        console_print(
+                            "Woops that action caused the model to start looping. Try a different action to prevent that.")
                         continue
 
                 if player_won(result):
@@ -224,6 +234,6 @@ if __name__ == '__main__':
     args = argparse.ArgumentParser()
     args.add_argument("--debug", action="store_true")
     args.add_argument("--len", type=int, default=120)
+    args.add_argument("--inline", action="store_true", help="inline actions")
     args = args.parse_args()
     play_aidungeon_2()
-

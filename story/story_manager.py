@@ -7,7 +7,7 @@ import subprocess
 import os
 from generator.gpt2.gpt2_generator import GPT2Generator
 
-class Story():
+class Story:
 
     def __init__(self, story_start, context ="", seed=None, game_state=None, upload_story=False):
         self.story_start = story_start
@@ -149,19 +149,19 @@ class Story():
             return "Error save not found."
 
 
-class StoryManager():
+class StoryManager:
 
     def __init__(self, generator: GPT2Generator, debug_print=False):
         self.generator = generator
-        self.story = None
+        self.story: Story = None
         self.debug_print = debug_print
-        
+
     def start_new_story(self, story_prompt, context="", game_state=None, upload_story=False):
         block = self.generator.generate(context + story_prompt,debug_print=self.debug_print)
         block = cut_trailing_sentence(block)
         self.story = Story(context + story_prompt + block, context=context, game_state=game_state, upload_story=upload_story)
         return self.story
-    
+
     def load_story(self, story, from_json=False):
         if from_json:
             self.story = Story("")

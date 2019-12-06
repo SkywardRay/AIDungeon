@@ -55,7 +55,7 @@ def select_game():
 def instructions():
     text = "\nAI Dungeon 2 Instructions:"
     text += '\n Enter actions starting with a verb ex. "go to the tavern" or "attack the orc."'
-    text += '\n To speak enter \'say "(thing you want to say)"\' or just "(thing you want to say)" '
+    text += '\n To speak enter \'say "(thing you want to say)"\' or just "(thing you want to say)" (with quotes!!)'
     text += '\n\nThe following commands can be entered for any action: '
     text += '\n  "revert"   Reverts the last action allowing you to pick a different action.'
     text += '\n  "quit"     Quits the game and saves'
@@ -63,6 +63,8 @@ def instructions():
     text += '\n  "save"     Makes a new save of your game and gives you the save ID'
     text += '\n  "load"     Asks for a save ID and loads the game if the ID is valid'
     text += '\n  "print"    Prints a transcript of your adventure (without extra newline formatting)'
+    text += '\n  "query"    Ask a question without advancing the story (ex: what is my name)'
+    text += '\n  "debug"    Input literal'
     text += '\n  "help"     Prints these instructions again'
     return text
 
@@ -150,8 +152,8 @@ def play_aidungeon_2():
                     console_print("You can't go back any farther. ")
                     continue
 
-                story_manager.story.actions = story_manager.story.actions[:-1]
-                story_manager.story.results = story_manager.story.results[:-1]
+                story_manager.story.actions.pop()
+                story_manager.story.results.pop()
                 console_print("Last action reverted. ")
                 if len(story_manager.story.results) > 0:
                     console_print(story_manager.story.results[-1])
@@ -170,13 +172,13 @@ def play_aidungeon_2():
                 console_print(answer)
 
             elif len(action.split()) >= 2 and action.split()[0] == "debug":
-                answer = story_manager.generate_result(action.split(maxsplit=1)[1])
+                action = action.split(maxsplit=1)[1]
+                action.replace("\\n", "\n")  # experiment with newlines
+                answer = story_manager.generate_result(action)
                 console_print(answer)
             else:
                 if action == "":
                     action = ""
-                    # result = story_manager.act(action)
-                    # console_print(result)
 
                 elif action[0] == '"':
                     action = "You say " + action

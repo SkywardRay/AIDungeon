@@ -84,7 +84,7 @@ def sample_sequence(hparams, length, start_token=None, batch_size=None, context=
             next_outputs = step(hparams, prev, past=past)
             logits = next_outputs['logits'][:, -1, :]
             if temperature == 0:
-                samples = tf.argmax(logits, axis=-1, output_type=tf.int32)
+                samples = tf.expand_dims(tf.argmax(logits, axis=-1, output_type=tf.int32), axis=-1)
             else:
                 logits = logits / tf.to_float(temperature)
                 logits = penalize_used(logits, output)

@@ -66,7 +66,7 @@ class GPT2Generator:
 
     def generate_raw(self, prompt, use_top: bool):
         context_tokens = self.enc.encode(prompt)
-        out = self.sess.run(self.top_output if not use_top else self.output, feed_dict={
+        out = self.sess.run(self.top_output if use_top else self.output, feed_dict={
                 self.context: [context_tokens]
             })[0, len(context_tokens):]
         return self.enc.decode(out)

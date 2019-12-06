@@ -86,10 +86,10 @@ class GPT2Generator:
 
     def generate_raw(self, prompt):
         context_tokens = self.enc.encode(prompt)
-        text = self.sess.run(self.output, feed_dict={
+        out = self.sess.run(self.output, feed_dict={
                 self.context: [context_tokens]
             })[0, len(context_tokens):]
-        return text
+        return self.enc.decode(out)
         # generated = 0
         # for _ in range(self.samples // self.batch_size):
         #     out = self.sess.run(self.output, feed_dict={

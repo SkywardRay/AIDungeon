@@ -41,6 +41,12 @@ class GPT2Generator:
             batch_size=self.batch_size,
             temperature=temperature, top_k=top_k, top_p=top_p
         )
+        self.top_output = sample.sample_sequence(
+            hparams=hparams, length=self.generate_num,
+            context=self.context,
+            batch_size=self.batch_size,
+            temperature=0
+        )
 
         saver = tf.train.Saver()
         ckpt = tf.train.latest_checkpoint(os.path.join(models_dir, self.model_name))
@@ -58,9 +64,9 @@ class GPT2Generator:
         # print(repr(prompt))
         return prompt
 
-    def generate_raw(self, prompt):
+    def generate_raw(self, prompt, use_top: bool):
         context_tokens = self.enc.encode(prompt)
-        out = self.sess.run(self.output, feed_dict={
+        out = self.sess.run(self.top_output if not use_top else self.output, feed_dict={
                 self.context: [context_tokens]
             })[0, len(context_tokens):]
         return self.enc.decode(out)
@@ -75,7 +81,7 @@ class GPT2Generator:
         # return text
 
 
-    def generate(self, prompt, debug_print=False, options=None, seed=1):
+    def generate(self, prompt, debug_print=False, use_top=False):
 
         # prompt = self.prompt_replace(prompt)
 
@@ -84,7 +90,7 @@ class GPT2Generator:
             print("Prompt is: ", repr(prompt))
 
         for _ in range(5):
-            text = self.generate_raw(prompt)
+            text = self.generate_raw(prompt, use_top)
             if debug_print:
                 print("Generated result is: ", repr(text))
                 print("******END DEBUG******")

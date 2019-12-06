@@ -7,9 +7,10 @@ import subprocess
 import os
 from generator.gpt2.gpt2_generator import GPT2Generator
 
+
 class Story:
 
-    def __init__(self, story_start, context ="", seed=None, game_state=None, upload_story=False):
+    def __init__(self, story_start, context="", seed=None, game_state=None, upload_story=False):
         self.story_start = story_start
         self.context = context
         self.rating = -1
@@ -38,7 +39,6 @@ class Story:
             console_print("Game saved.")
             console_print("To load the game, type 'load' and enter the following ID: " + self.uuid)
 
-
     def init_from_dict(self, story_dict):
         self.story_start = story_dict["story_start"]
         self.seed = story_dict["seed"]
@@ -54,7 +54,6 @@ class Story:
             self.rating = story_dict["rating"]
         else:
             self.rating = -1
-
 
     def initialize_from_json(self, json_string):
         story_dict = json.loads(json_string)
@@ -122,7 +121,6 @@ class Story:
     def save_to_storage(self):
         self.uuid = str(uuid.uuid1())
 
-
         story_json = self.to_json()
         file_name = "story" + str(self.uuid) + ".json"
         f = open(file_name, "w")
@@ -157,9 +155,10 @@ class StoryManager:
         self.debug_print = debug_print
 
     def start_new_story(self, story_prompt, context="", game_state=None, upload_story=False):
-        block = self.generator.generate(context + story_prompt,debug_print=self.debug_print)
+        block = self.generator.generate(context + story_prompt, debug_print=self.debug_print)
         block = cut_trailing_sentence(block)
-        self.story = Story(context + story_prompt + block, context=context, game_state=game_state, upload_story=upload_story)
+        self.story = Story(context + story_prompt + block, context=context, game_state=game_state,
+                           upload_story=upload_story)
         return self.story
 
     def load_story(self, story, from_json=False):
@@ -180,15 +179,13 @@ class StoryManager:
 class UnconstrainedStoryManager(StoryManager):
 
     def act(self, action_choice):
-
         result = self.generate_result(action_choice)
         self.story.add_to_story(action_choice, result)
         return result
 
-    def generate_result(self, action):
-        block = self.generator.generate(self.story_context() + action, debug_print=self.debug_print)
+    def generate_result(self, action, use_top=False):
+        block = self.generator.generate(self.story_context() + action, debug_print=self.debug_print, use_top=use_top)
         return block
-
 
 # class ConstrainedStoryManager(StoryManager):
 #

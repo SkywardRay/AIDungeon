@@ -265,15 +265,15 @@ def second_to_first_person(text):
     return capitalize_first_letters(text[1:])
 
 
-if __name__ == '__main__':
-    result = 'The only thing they can tell you is, "We have nowhere else to…"'
-    result = result.replace('."', '".')
-    result = result.replace("#", "")
-    result = result.replace("*", "")
-    result = first_to_second_person(result)
-    # result = remove_profanity(result)
-
-    while ("\n \n \n " in result):
-        result = result.replace("\n \n \n ", "\n \n ")
-
-    print(result)
+# if __name__ == '__main__':
+#     result = 'The only thing they can tell you is, "We have nowhere else to…"'
+#     result = result.replace('."', '".')
+#     result = result.replace("#", "")
+#     result = result.replace("*", "")
+#     result = first_to_second_person(result)
+#     # result = remove_profanity(result)
+#
+#     while ("\n \n \n " in result):
+#         result = result.replace("\n \n \n ", "\n \n ")
+#
+#     print(result)

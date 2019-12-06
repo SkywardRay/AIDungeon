@@ -101,9 +101,8 @@ class GPT2Generator:
         # return text
 
 
-    def generate(self, prompt, options=None, seed=1):
+    def generate(self, prompt, debug_print=False, options=None, seed=1):
 
-        debug_print = False
         prompt = self.prompt_replace(prompt)
 
         if debug_print:

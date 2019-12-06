@@ -1,4 +1,6 @@
 from tensorflow.python.compiler.tensorrt import trt_convert as trt
+import tensorflow as tf
+
 
 converter = trt.TrtGraphConverterV2(
     input_saved_model_dir="models/model_v5")

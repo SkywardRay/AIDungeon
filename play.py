@@ -173,7 +173,8 @@ def play_aidungeon_2():
 
             elif len(action.split()) >= 2 and action.split()[0] == "debug":
                 action = action.split(maxsplit=1)[1]
-                action.replace("\\n", "\n")  # experiment with newlines
+                action = bytes(action, "utf-8").decode("unicode_escape")
+                # action = action.replace("\\n", "\n")  # experiment with newlines
                 answer = story_manager.generate_result(action)
                 console_print(answer)
             else:

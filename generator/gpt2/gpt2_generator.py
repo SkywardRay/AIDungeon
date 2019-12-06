@@ -73,7 +73,7 @@ class GPT2Generator:
         result = result.replace("*", "")
         result = result.replace("\n\n", "\n")
         #result = first_to_second_person(result)
-        result = remove_profanity(result)
+#         result = remove_profanity(result)
 
         if not first_letter_capitalized:
             result = result[0].lower() + result[1:]

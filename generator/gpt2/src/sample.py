@@ -87,7 +87,8 @@ def sample_sequence(hparams, length, start_token=None, batch_size=None, context=
                 samples = tf.expand_dims(tf.argmax(logits, axis=-1, output_type=tf.int32), axis=-1)
             else:
                 logits = logits / tf.to_float(temperature)
-                logits = penalize_used(logits, output)
+                if past is not None:
+                    logits = penalize_used(logits, past)
                 logits = top_k_logits(logits, k=top_k)
                 logits = top_p_logits(logits, p=top_p)
                 samples = tf.multinomial(logits, num_samples=1, output_dtype=tf.int32)

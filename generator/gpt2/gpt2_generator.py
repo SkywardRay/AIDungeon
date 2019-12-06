@@ -1,16 +1,19 @@
 from story.utils import *
 import warnings
+
 warnings.filterwarnings("ignore")
 import os
 import tensorflow as tf
+
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 from generator.gpt2.src import sample, encoder, model
 import json
 
+
 class GPT2Generator:
 
-    def __init__(self,  generate_num=120, temperature=0.4, top_k=40, top_p=0.9):
-        self.generate_num=generate_num
+    def __init__(self, generate_num=120, temperature=0.4, top_k=40, top_p=0.9):
+        self.generate_num = generate_num
         self.temp = temperature
         self.top_k = top_k
         self.top_p = top_p
@@ -33,7 +36,7 @@ class GPT2Generator:
         self.sess = tf.compat.v1.Session(config=config)
 
         self.context = tf.placeholder(tf.int32, [self.batch_size, None])
-        #np.random.seed(seed)
+        # np.random.seed(seed)
         # tf.set_random_seed(seed)
         self.output = sample.sample_sequence(
             hparams=hparams, length=self.generate_num,
@@ -55,10 +58,9 @@ class GPT2Generator:
     def generate_raw(self, prompt, use_top: bool):
         context_tokens = self.enc.encode(prompt)
         out = self.sess.run(self.top_output if use_top else self.output, feed_dict={
-                self.context: [context_tokens]
-            })[0, len(context_tokens):]
+            self.context: [context_tokens]
+        })[0, len(context_tokens):]
         return self.enc.decode(out)
-
 
     def generate(self, prompt, debug_print=False, use_top=False):
 

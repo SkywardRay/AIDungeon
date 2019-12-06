@@ -151,12 +151,13 @@ class Story():
 
 class StoryManager():
 
-    def __init__(self, generator: GPT2Generator):
+    def __init__(self, generator: GPT2Generator,debug_print=False):
         self.generator = generator
         self.story = None
+        self.debug_print=debug_print
         
     def start_new_story(self, story_prompt, context="", game_state=None, upload_story=False):
-        block = self.generator.generate(context + story_prompt)
+        block = self.generator.generate(context + story_prompt,debug_print=self.debug_print)
         block = cut_trailing_sentence(block)
         self.story = Story(context + story_prompt + block, context=context, game_state=game_state, upload_story=upload_story)
         return self.story
@@ -185,7 +186,7 @@ class UnconstrainedStoryManager(StoryManager):
         return result
 
     def generate_result(self, action):
-        block = self.generator.generate(self.story_context() + action)
+        block = self.generator.generate(self.story_context() + action,debug_print=self.debug_print)
         return block
 
 

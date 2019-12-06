@@ -4,6 +4,7 @@ from story.utils import *
 import yaml
 from termios import tcflush, TCIFLUSH
 import time, sys, os
+import argparse
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
 def select_game():
@@ -73,7 +74,7 @@ def play_aidungeon_2():
 
     print("\nInitializing AI Dungeon! (This might take a few minutes)\n")
     generator = GPT2Generator()
-    story_manager = UnconstrainedStoryManager(generator)
+    story_manager = UnconstrainedStoryManager(generator,debug_print=args.debug)
     print("\n")
 
     with open('opening.txt', 'r') as file:
@@ -158,8 +159,8 @@ def play_aidungeon_2():
             else:
                 if action == "":
                     action = ""
-                    result = story_manager.act(action)
-                    console_print(result)
+                    # result = story_manager.act(action)
+                    # console_print(result)
 
                 elif action[0] == '"':
                     action = "You say " + action
@@ -177,7 +178,10 @@ def play_aidungeon_2():
                     action = first_to_second_person(action)
 
                     action = "\n> " + action + "\n"
-
+                if args.debug:
+                    console_print("\n******DEBUG FULL ACTION*******")
+                    console_print(action)
+                    console_print("******END DEBUG******\n")
                 result = "\n" + story_manager.act(action)
                 if len(story_manager.story.results) >= 2:
                     similarity = get_similarity(story_manager.story.results[-1], story_manager.story.results[-2])
@@ -209,5 +213,8 @@ def play_aidungeon_2():
 
 
 if __name__ == '__main__':
+    args=argparse.ArgumentParser()
+    args.add_argument("--debug", action="store_true")
+    args=args.parse_args()
     play_aidungeon_2()
 

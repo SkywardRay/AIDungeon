@@ -185,9 +185,12 @@ def play_aidungeon_2():
             else:
                 if action != "":
                     action = action[0].lower() + action[1:]
-                    verb, rest = action.split(maxsplit=1)
-                    if action[0] == '"' or verb.lower() == "say" and rest[0] != '"':
-                        action = f'say "{rest}"'
+                    if action[0] == '"':
+                        action = f'say {action}'
+                    elif action[0:4].lower() == "say ":
+                        quote = action.split(maxsplit=1)[1]
+                        if quote[0] != '"':
+                            action = f'say "{quote}"'
                     if action[0:2].lower() not in ['i ', "i'"]:  # don't input i
                         action = "I " + action
                     action = first_to_second_person(action)

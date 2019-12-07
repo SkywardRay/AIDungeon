@@ -75,6 +75,6 @@ class GPT2Generator:
                 print("******END DEBUG******")
 
             result = result_replace(text)
-            if len(result) > 0:
+            if len(result.strip()) > 0:
                 break
         return result

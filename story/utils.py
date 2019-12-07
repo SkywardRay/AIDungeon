@@ -105,7 +105,7 @@ def result_replace(result):
     # print("\n\nBEFORE RESULT_REPLACE:")
     # print(repr(result))
 
-    result = cut_trailing_sentence(result.strip())
+    result = cut_trailing_sentence(result)
     if len(result) == 0:
         return ""
     first_letter_capitalized = result[0].isupper()

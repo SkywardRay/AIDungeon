@@ -5,7 +5,7 @@ from generator.gpt2.src import model
 
 def penalize_used(logits, output):
     # output has shape (1, len) and type int32
-    counts = tf.math.bincount(output[0, -60:], minlength=logits.shape[1], dtype=tf.float32)
+    counts = tf.math.bincount(output[0, -240:], minlength=logits.shape[1], dtype=tf.float32)
     counts = tf.expand_dims(counts, 0)
     return logits + counts * math.log(.6)
     # return logits * tf.math.pow(.85, counts)

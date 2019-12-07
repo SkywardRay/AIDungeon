@@ -8,7 +8,7 @@ def penalize_used(logits, output):
 
     # I want to change the indices of logits wherever the index is found in output
     # change_tensor = tf.zeros_like(logits, dtype=logits.dtype)
-    counts = tf.math.bincount(output[0, -20:])
+    counts = tf.math.bincount(output[0, -20:], dtype=tf.float32)
     # unique = tf.unique(output[0][-20:])[0]  # unique values of output
     # ones = tf.ones_like(unique, dtype=unique.dtype)
     # indices = tf.expand_dims(unique, 1)

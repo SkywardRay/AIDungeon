@@ -42,20 +42,9 @@ def get_num_options(num):
 
 
 def player_died(text):
-    # reg_phrases = ["You[a-zA-Z ]* die.", "you[a-zA-Z ]* die.", "You[a-zA-Z ]* die ", "you[a-zA-Z ]* die ",]
-    #
-    # for phrase in reg_phrases:
-    #     reg_expr = re.compile(phrase)
-    #     matches = re.findall(reg_expr, text)
-    #     if len(matches) > 0:
-    #         return True
-
-    dead_phrases = ["you die", "You die", "you died", "you are dead", "You died", "You are dead", "You're dead",
-                    "you're dead", "you have died", "You have died", "you bleed out"]
-    for phrase in dead_phrases:
-        if phrase in text:
-            return True
-    return False
+    you_dead_regexps = ["you('re| are) dead", "you die", "you('ve| have) died", "you \w+ to death",
+                        ""]
+    return any(re.search(regexp, text) for regexp in you_dead_regexps)
 
 
 def player_won(text):

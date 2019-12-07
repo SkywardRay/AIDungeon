@@ -44,8 +44,8 @@ def select_game():
     setting_description = data["settings"][setting_key]["description"]
     character = data["settings"][setting_key]["characters"][character_key]
 
-    context = "You are " + name + ", a " + character_key + " " + setting_description + \
-              "You have a " + character["item1"] + " and a " + character["item2"] + ". "
+    context = f"Your name is {name}, and you are a {character_key} {setting_description}" \
+              f"You have a {character['item1']} and a {character['item2']}. "
     prompt_num = np.random.randint(0, len(character["prompts"]))
     prompt = character["prompts"][prompt_num]
 
@@ -170,11 +170,12 @@ def play_aidungeon_2():
                 else:
                     question = capitalize_i(question)
                 question = "\nQ: " + question + "\n"
+                console_print(question)
                 answer = story_manager.generate_result(question, use_top=True)
                 answer = answer.strip().split("\n")[0]  # gonna be a bunch of alternating Q: A: lines
                 # if answer[:3] == "A: ":
                 #     answer = answer[3:]
-                console_print(question + answer)
+                console_print(answer)
 
             elif len(action.split()) >= 2 and action.split()[0] in ["debug", "debugt"]:
                 debugt, action = action.split(maxsplit=1)

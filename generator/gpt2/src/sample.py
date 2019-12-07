@@ -3,12 +3,13 @@ import math
 from generator.gpt2.src import model
 
 
-def penalize_used(logits, output):
+def penalize_used(logits, output, n_vocab):
     # output has shape (1, len) and type int32
+    counts = tf.math.bincount(output[0, -20:], minlength=n_vocab, dtype=tf.float32)
+    return logits + tf.expand_dims(counts, 0) * math.log(.8)  # every time it's .8 times as likely
 
     # I want to change the indices of logits wherever the index is found in output
     # change_tensor = tf.zeros_like(logits, dtype=logits.dtype)
-    counts = tf.math.bincount(output[0, -20:], dtype=tf.float32)
     # unique = tf.unique(output[0][-20:])[0]  # unique values of output
     # ones = tf.ones_like(unique, dtype=unique.dtype)
     # indices = tf.expand_dims(unique, 1)
@@ -16,7 +17,6 @@ def penalize_used(logits, output):
     # updates = tf.scatter_nd(indices, ones, [logits.shape[1]])
     #
     # bool_tensor = tf.expand_dims(tf.cast(updates, tf.bool), 0)
-    return logits + tf.expand_dims(counts, 0) * math.log(.8)  # every time it's .8 times as likely
     # return tf.compat.v1.where(        bool_tensor,        logits * .85,    logits)
 
 
@@ -88,7 +88,7 @@ def sample_sequence(hparams, length, start_token=None, batch_size=None, context=
                 samples = tf.expand_dims(tf.argmax(logits, axis=-1, output_type=tf.int32), axis=-1)
             else:
                 logits = logits / tf.to_float(temperature)
-                logits = penalize_used(logits, output)
+                logits = penalize_used(logits, output, hparams["n_vocab"])
                 logits = top_k_logits(logits, k=top_k)
                 logits = top_p_logits(logits, p=top_p)
                 samples = tf.multinomial(logits, num_samples=1, output_dtype=tf.int32)

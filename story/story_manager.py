@@ -1,3 +1,5 @@
+import itertools
+
 from story.utils import *
 # from other.cacher import Cacher
 import json
@@ -12,15 +14,17 @@ class Story:
 
     def __init__(self, story_start, context="", seed=None, game_state=None, upload_story=False):
         self.story_start = story_start
+        """the first generated text with context as prompt"""
         self.context = context
+        """the initial non-generated part (part of story_start)"""
         self.rating = -1
         self.upload_story = upload_story
 
-        # list of actions. First action is the prompt length should always equal that of story blocks
         self.actions = []
+        "list of actions. First action is the prompt length should always equal that of story blocks"
 
-        # list of story blocks first story block follows prompt and is intro story
         self.results = []
+        "list of story blocks first story block follows prompt and is intro story"
 
         # Only needed in constrained/cached version
         self.seed = seed
@@ -31,7 +35,8 @@ class Story:
         if game_state is None:
             game_state = dict()
         self.game_state = game_state
-        self.memory = 20  # keep this many action-result pairs as context
+        self.memory = 20
+        """keep this many action-result pairs as context"""
 
     def __del__(self):
         if self.upload_story:
@@ -64,6 +69,10 @@ class Story:
         self.results.append(story_block)
 
     def latest_result(self):
+        mem_texts = itertools.chain.from_iterable(zip(self.actions[-self.memory:], self.results[-self.memory:]))
+        result = self.context if len(self.results) > self.memory else self.story_start
+        result = "".join((result, *mem_texts))
+        return result
 
         mem_ind = self.memory
         if len(self.results) < 2:

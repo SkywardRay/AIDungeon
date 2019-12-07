@@ -5,8 +5,9 @@ from generator.gpt2.src import model
 
 def penalize_used(logits, output):
     # output has shape (1, len) and type int32
-    counts = tf.math.bincount(output[0, -20:], minlength=logits.shape[1], dtype=tf.float32)
-    return logits + tf.expand_dims(counts, 0) * math.log(.8)  # every time it's p times as likely
+    counts = tf.math.bincount(output[0, -60:], minlength=logits.shape[1], dtype=tf.float32)
+    counts = tf.expand_dims(counts, 0)
+    return logits * tf.math.pow(.85, counts)
 
     # I want to change the indices of logits wherever the index is found in output
     # change_tensor = tf.zeros_like(logits, dtype=logits.dtype)

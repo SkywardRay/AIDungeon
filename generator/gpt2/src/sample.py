@@ -3,9 +3,9 @@ import math
 from generator.gpt2.src import model
 
 
-def penalize_used(logits, output, n_vocab):
+def penalize_used(logits, output):
     # output has shape (1, len) and type int32
-    counts = tf.math.bincount(output[0, -20:], minlength=n_vocab, dtype=tf.float32)
+    counts = tf.math.bincount(output[0, -20:], minlength=logits.shape[1], dtype=tf.float32)
     return logits + tf.expand_dims(counts, 0) * math.log(.8)  # every time it's .8 times as likely
 
     # I want to change the indices of logits wherever the index is found in output
@@ -88,7 +88,7 @@ def sample_sequence(hparams, length, start_token=None, batch_size=None, context=
                 samples = tf.expand_dims(tf.argmax(logits, axis=-1, output_type=tf.int32), axis=-1)
             else:
                 logits = logits / tf.to_float(temperature)
-                logits = penalize_used(logits, output, hparams["n_vocab"])
+                logits = penalize_used(logits, output)
                 logits = top_k_logits(logits, k=top_k)
                 logits = top_p_logits(logits, p=top_p)
                 samples = tf.multinomial(logits, num_samples=1, output_dtype=tf.int32)

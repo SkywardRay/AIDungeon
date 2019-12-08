@@ -8,15 +8,21 @@ def penalize_used(logits, output):
     # NEED TO penalize all output because the model likes to repeat the input
     output = output[0]
     n_vocab = logits.shape[1]
-    N = tf.shape(output)[0]  # lookback
-    N_float = tf.cast(N, dtype=tf.float32)
-    weights = tf.range(1, N_float + 1, dtype=tf.float32) / N_float  # Invariant: previous token is weight 1
-    counts = tf.math.bincount(output, weights=weights,
-                              minlength=n_vocab)
-    counts = tf.expand_dims(counts, 0)
+    # N = tf.shape(output)[0]  # lookback
+    # N_float = tf.cast(N, dtype=tf.float32)
+    # weights = tf.range(1, N_float + 1, dtype=tf.float32) / N_float  # Invariant: previous token is weight 1
+    # counts = tf.math.bincount(output, weights=weights,
+    #                           minlength=n_vocab)
+    # counts = tf.expand_dims(counts, 0)
     # return tf.compat.v1.where(tf.cast(counts, dtype=tf.bool), logits * .85, logits)
-    return logits + counts * math.log(.6)  # A token is p times as likely to be repeated consecutively
-    # return logits * tf.math.pow(.85, counts)
+    # return logits + counts * math.log(.6)  # A token is p times as likely to be repeated consecutively
+
+    y, _ = tf.unique(output[::-1])  # y is the unique tokens, starting from most recent
+    len_y = tf.cast(tf.shape(y)[0], dtype=tf.float32)
+    # Invariant: previous token is weight 1
+    weights = tf.range(len_y + 1, 1, delta=-1, dtype=tf.float32) * (math.log(.3) / len_y)
+    penalties = tf.scatter_nd(tf.expand_dims(y, 1), weights, [n_vocab])
+    return logits + penalties
 
 
 def top_k_logits(logits, k):

@@ -9,7 +9,8 @@ def penalize_used(logits, output):
     # output = output[0, -180:]
     # N = tf.shape(output)[0]  # lookback
     # weights = tf.range(1, tf.cast(N, dtype=tf.float32) + 1, dtype=tf.float32) / tf.cast(N, dtype=tf.float32)
-    counts = tf.math.bincount(output[0, -180:],  # weights=weights,
+    # NEED TO penalize all output because the model likes to repeat the input
+    counts = tf.math.bincount(output[0, :],  # weights=weights,
                               minlength=n_vocab)
     counts = tf.expand_dims(counts, 0)
     return tf.compat.v1.where(tf.cast(counts, dtype=tf.bool), logits * .85, logits)

@@ -21,7 +21,7 @@ def penalize_used(logits, output, penalty: float):
     len_y = tf.cast(tf.shape(y)[0], dtype=tf.float32)
     # Invariant: previous token is weight 1
     # t = 1
-    weights = tf.range(len_y + 1, 1, delta=-1, dtype=tf.float32) * (penalty / len_y / len_y / 2)
+    weights = tf.range(len_y + 1, 1, delta=-1, dtype=tf.float32) * (penalty / len_y / len_y * 2)
     penalties = tf.scatter_nd(tf.expand_dims(y, 1), weights, [n_vocab])
     return logits * tf.expand_dims(1 - penalties, 0)
 

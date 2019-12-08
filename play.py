@@ -89,7 +89,7 @@ def play_aidungeon_2():
         print("\n\n")
         if args.load:
             story_manager.story = Story("")
-            story_manager.story.load_from_local(args.load)
+            story_manager.story.load_from_storage(args.load)
         else:
             context, prompt = select_game()
             print("\nGenerating story...")

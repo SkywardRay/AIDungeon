@@ -83,7 +83,7 @@ def split_first_sentence(text):
     return text[0:split_point], text[split_point:]
 
 
-def cut_trailing_action(text):
+def cut_trailing_action(text):  # This doesn't really work
     lines = text.rsplit("\n", 1)
     last_line = lines[-1]
     if re.search("you (ask|say)", last_line.lower()):
@@ -125,12 +125,11 @@ def cut_trailing_sentence(text):
     if act_token != -1:
         text = text[:act_token]
 
-    last_punc = max(text.rfind('.'), text.rfind("!"), text.rfind("?"))
+    last_punc = max(text.rfind('.'), text.rfind("!"), text.rfind("?"), text.rfind("\""))
     # if last_punc >= 0:
     text = text[:last_punc + 1]
-
     text = cut_trailing_quotes(text)
-    text = cut_trailing_action(text)
+    # text = cut_trailing_action(text)
     return text
 
 

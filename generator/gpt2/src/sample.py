@@ -15,7 +15,7 @@ def penalize_used(logits, output):
                               minlength=n_vocab)
     counts = tf.expand_dims(counts, 0)
     # return tf.compat.v1.where(tf.cast(counts, dtype=tf.bool), logits * .85, logits)
-    return logits + counts * math.log(.3)  # A token is .3 times as likely to be repeated consecutively
+    return logits + counts * math.log(.6)  # A token is p times as likely to be repeated consecutively
     # return logits * tf.math.pow(.85, counts)
 
 

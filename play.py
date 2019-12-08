@@ -22,7 +22,7 @@ def select_game():
 
         console_print(print_str)
     console_print(str(len(settings)) + ") custom")
-    choice = get_num_options(len(settings) + 1)
+    choice = 0 if args.defaults else get_num_options(len(settings) + 1)
 
     if choice == len(settings):
         context = ""
@@ -38,9 +38,9 @@ def select_game():
     characters = data["settings"][setting_key]["characters"]
     for i, character in enumerate(characters):
         console_print(str(i) + ") " + character)
-    character_key = list(characters)[get_num_options(len(characters))]
+    character_key = list(characters)[0 if args.defaults else get_num_options(len(characters))]
 
-    name = input("\nWhat is your name? ").title() or "Akababa"
+    name = "Akababa" if args.defaults else input("\nWhat is your name? ").title()
     setting_description = data["settings"][setting_key]["description"]
     character = data["settings"][setting_key]["characters"][character_key]
 
@@ -91,7 +91,6 @@ def play_aidungeon_2():
 
         story_manager.start_new_story(prompt, context=context)
 
-        print("\n")
         console_print(str(story_manager.story))
         while True:
             sys.stdin.flush()
@@ -120,8 +119,6 @@ def play_aidungeon_2():
                 save_id = story_manager.story.save_to_storage()
                 console_print("Game saved.")
                 console_print("To load the game, type 'load' and enter the following ID: " + save_id)
-                # else:
-                #     console_print("Saving has been turned off. Cannot save.")
 
             elif action == "load":
                 load_id = input("What is the ID of the saved game?")
@@ -158,7 +155,7 @@ def play_aidungeon_2():
                     question = first_to_second_person(question)
                 else:
                     question = capitalize_i(question)
-                question = "\n> Q: " + question + "\n"
+                question = "\n> Q: " + question + "\nA:"
                 console_print(question)
                 answer = story_manager.generate_result(question, use_top=True)
                 answer = answer.strip().split("\n", 1)[0]  # gonna be a bunch of alternating Q: A: lines
@@ -222,6 +219,7 @@ def play_aidungeon_2():
 if __name__ == '__main__':
     args = argparse.ArgumentParser()
     args.add_argument("--debug", action="store_true")
+    args.add_argument("--defaults", action="store_true")
     args.add_argument("--len", type=int, default=80)
     # args.add_argument("--inline", action="store_true", help="inline actions")
     args = args.parse_args()

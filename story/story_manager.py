@@ -12,18 +12,18 @@ from generator.gpt2.gpt2_generator import GPT2Generator
 
 class Story:
 
-    def __init__(self, story_start, context="", seed=None, game_state=None, upload_story=False):
-        self.story_start = story_start
+    def __init__(self, first_result, context="", seed=None, game_state=None, upload_story=False):
+        self.story_start = context + first_result
         """the first generated text with context as prompt"""
         self.context = context
         """the initial non-generated part (part of story_start)"""
         self.rating = -1
         self.upload_story = upload_story
 
-        self.actions = []
+        self.actions = [""]
         "list of actions. First action is the prompt length should always equal that of story blocks"
 
-        self.results = []
+        self.results = [first_result]
         "list of story blocks first story block follows prompt and is intro story"
 
         # Only needed in constrained/cached version
@@ -72,19 +72,24 @@ class Story:
         if num_history is None:
             num_history = self.memory
         mem_texts = itertools.chain.from_iterable(zip(self.actions[-num_history:], self.results[-num_history:]))
-        result = self.context if len(self.results) > num_history else self.story_start
-        result = "".join((result, *mem_texts))
+        # result = self.context if len(self.results) > num_history else self.story_start
+        result = "\n".join((self.context, *mem_texts))
         return result
 
     def __str__(self):
-        story_list = [self.story_start]
-        for i in range(len(self.results)):
-            story_list.append(self.actions[i])
-            story_list.append(self.results[i])
+        return self.latest_result(num_history=99999999)
+        # story_list = [self.story_start]
+        # for i in range(len(self.results)):
+        #     story_list.append(self.actions[i])
+        #     story_list.append(self.results[i])
+        #
+        # return "".join(story_list)
 
-        return "".join(story_list)
+    def pop(self, *args):
+        self.actions.pop(*args)
+        self.results.pop(*args)
 
-    def to_json(self):
+    def to_json(self):  # Invalid since I put story start as empty action
         story_dict = {}
         story_dict["story_start"] = self.story_start
         story_dict["seed"] = self.seed
@@ -154,7 +159,7 @@ class StoryManager:
     def start_new_story(self, story_prompt, context="", game_state=None, upload_story=False):
         block = self.generator.generate(context + story_prompt, debug_print=self.debug_print)
         block = cut_trailing_sentence(block)
-        self.story = Story(context + story_prompt + block, context=context, game_state=game_state,
+        self.story = Story(story_prompt + block, context=context, game_state=game_state,
                            upload_story=upload_story)
         return self.story
 
@@ -175,14 +180,24 @@ class StoryManager:
 
 class UnconstrainedStoryManager(StoryManager):
 
-    def act(self, action_choice):
-        result = self.generate_result(action_choice)
-        self.story.add_to_story(action_choice, result)
+    def act(self, action):
+        saying = '"' in action
+        prompt = f"\n> {action}\n"
+        if saying:
+            prompt += f"{action}\n"
+        result = self.generate_result(prompt)
+        if saying:
+            result = f"{action}\n{result}"
+        self.story.add_to_story(f"> {action}", result)
         return result
 
-    def generate_result(self, action, use_top=False):
-        block = self.generator.generate(self.story_context() + action, debug_print=self.debug_print, use_top=use_top)
-        return block
+    def more_text(self):
+        more_result = self.generate_result("")
+        self.story.results[-1] += more_result
+        return more_result
+
+    def generate_result(self, action, use_top=False):  # non mutating
+        return self.generator.generate(self.story_context() + action, debug_print=self.debug_print, use_top=use_top)
 
 # class ConstrainedStoryManager(StoryManager):
 #

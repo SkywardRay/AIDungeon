@@ -148,17 +148,13 @@ def play_aidungeon_2():
 
             elif action == "revert":
 
-                if len(story_manager.story.actions) == 0:
+                if len(story_manager.story.actions) <= 1:
                     console_print("You can't go back any farther. ")
                     continue
 
-                story_manager.story.actions.pop()
-                story_manager.story.results.pop()
+                story_manager.story.pop()
                 console_print("Last action reverted. ")
-                if len(story_manager.story.results) > 0:
-                    console_print(story_manager.story.results[-1])
-                else:
-                    console_print(story_manager.story.story_start)
+                console_print(story_manager.story.results[-1])
                 continue
 
             elif len(action.split()) >= 2 and action.split()[0] in ["query", "queryy"]:
@@ -184,9 +180,11 @@ def play_aidungeon_2():
                 answer = story_manager.generate_result(action, use_top=debugt == "debugt")
                 console_print(answer)
             else:
-                if action != "":
+                if action == "":
+                    result = story_manager.more_text()
+                else:
                     action = action[0].lower() + action[1:]
-                    if action[0] == '"':
+                    if action[0] == '"':  # TODO repeat say
                         action = f'say {action}'
                     elif action[0:4].lower() == "say ":
                         quote = action.split(maxsplit=1)[1]
@@ -195,26 +193,17 @@ def play_aidungeon_2():
                     if action[0:2].lower() not in ['i ', "i'"]:  # don't input i
                         action = "I " + action
                     action = first_to_second_person(action)
-                    if args.inline:
-                        action = "\n" + action
-                    else:
-                        if action[-1] not in [".", "?", "!"]:
-                            action = action + "."
-                        action = f"\n> {action}\n"
+                    if action[-1] not in [".", "?", "!"]:
+                        action = action + "."
+                        # action = f"\n> {action}\n"
 
                     console_print(action)
-                # if args.debug:
-                #     console_print("\n******DEBUG FULL ACTION*******")
-                #     console_print(action)
-                #     console_print("******END DEBUG******\n")
-                result = story_manager.act(action)
-                if args.inline:
-                    result = action + result
+                    result = story_manager.act(action)
+
                 if len(story_manager.story.results) >= 2:
                     similarity = get_similarity(story_manager.story.results[-1], story_manager.story.results[-2])
                     if similarity > 0.9:
-                        story_manager.story.actions = story_manager.story.actions[:-1]
-                        story_manager.story.results = story_manager.story.results[:-1]
+                        story_manager.story.pop()
                         console_print(
                             "Woops that action caused the model to start looping. Try a different action to prevent that.")
                         continue
@@ -243,7 +232,7 @@ def play_aidungeon_2():
 if __name__ == '__main__':
     args = argparse.ArgumentParser()
     args.add_argument("--debug", action="store_true")
-    args.add_argument("--len", type=int, default=120)
-    args.add_argument("--inline", action="store_true", help="inline actions")
+    args.add_argument("--len", type=int, default=80)
+    # args.add_argument("--inline", action="store_true", help="inline actions")
     args = args.parse_args()
     play_aidungeon_2()

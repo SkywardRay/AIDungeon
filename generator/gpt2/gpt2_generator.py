@@ -55,7 +55,7 @@ class GPT2Generator:
         ckpt = tf.train.latest_checkpoint(os.path.join(models_dir, self.model_name))
         saver.restore(self.sess, ckpt)
 
-    def generate(self, prompt, use_top: bool):
+    def generate(self, prompt, use_top: bool = False):
         context_tokens = self.enc.encode(prompt)
         out = self.sess.run(self.top_output if use_top else self.output, feed_dict={
             self.context: [context_tokens]

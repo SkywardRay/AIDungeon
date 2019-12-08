@@ -6,11 +6,12 @@ from generator.gpt2.src import model
 def penalize_used(logits, output):
     # output has shape (1, len) and type int32 - ASSUMES batchsize 1
     # NEED TO penalize all output because the model likes to repeat the input
+    output = output[0]
     n_vocab = logits.shape[1]
     N = tf.shape(output)[0]  # lookback
     N_float = tf.cast(N, dtype=tf.float32)
     weights = tf.range(1, N_float + 1, dtype=tf.float32) / N_float  # Invariant: previous token is weight 1
-    counts = tf.math.bincount(output[0, :], weights=weights,
+    counts = tf.math.bincount(output, weights=weights,
                               minlength=n_vocab)
     counts = tf.expand_dims(counts, 0)
     # return tf.compat.v1.where(tf.cast(counts, dtype=tf.bool), logits * .85, logits)

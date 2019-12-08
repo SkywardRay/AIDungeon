@@ -155,7 +155,7 @@ def play_aidungeon_2():
                     question = first_to_second_person(question)
                 else:
                     question = capitalize_i(question)
-                question = "\n> Q: " + question + "\nA:"
+                question = "\n> Q: " + question + "\nA:"  # Adding the space after A: messes up BPE, for ex. when asking for my name.
                 console_print(question)
                 answer = story_manager.generate_result(question, use_top=True)
                 answer = answer.strip().split("\n", 1)[0]  # gonna be a bunch of alternating Q: A: lines

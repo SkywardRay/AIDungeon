@@ -44,7 +44,7 @@ def get_num_options(num):
 def player_died(text):
     text = text.lower()
     you_dead_regexps = ["you('re| are) (dead|killed)", "you die", "you('ve| have) (died|been killed)",
-                        "you \w+ to death"]
+                        "you \w+( yourself)? to death"]
     return any(re.search(regexp, text) for regexp in you_dead_regexps)
 
 

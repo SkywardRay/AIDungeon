@@ -26,10 +26,6 @@ def penalize_used(logits, output):
 
 
 def top_k_logits(logits, k):
-    if k == 0:
-        # no truncation
-        return logits
-
     def _top_k():
         values, _ = tf.nn.top_k(logits, k=k)
         min_values = values[:, -1, tf.newaxis]
@@ -66,8 +62,8 @@ def top_p_logits(logits, p):
     )
 
 
-def sample_sequence(hparams, length, start_token=None, batch_size=None, context=None, temperature=1, top_k=0,
-                    top_p=1):
+def sample_sequence(hparams, length, start_token=None, batch_size=None, context=None,
+                    temperature=1, top_k=None, top_p=None):
     if start_token is None:
         assert context is not None, 'Specify exactly one of start_token and context!'
     else:
@@ -94,8 +90,10 @@ def sample_sequence(hparams, length, start_token=None, batch_size=None, context=
             else:
                 logits = logits / tf.to_float(temperature)
                 logits = penalize_used(logits, output)
-                logits = top_k_logits(logits, k=top_k)
-                logits = top_p_logits(logits, p=top_p)
+                if top_k is not None:
+                    logits = top_k_logits(logits, k=top_k)
+                if top_p is not None:
+                    logits = top_p_logits(logits, p=top_p)
                 samples = tf.random.categorical(logits, num_samples=1, dtype=tf.int32)
             return [
                 next_outputs['presents'] if past is None else tf.concat([past, next_outputs['presents']], axis=-2),

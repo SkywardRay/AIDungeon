@@ -48,7 +48,7 @@ class GPT2Generator:
             hparams=hparams, length=self.generate_num,
             context=self.context,
             batch_size=self.batch_size,
-            temperature=0.1
+            temperature=0.1, top_k=top_k, top_p=top_p
         )
 
         saver = tf.train.Saver()

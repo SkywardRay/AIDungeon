@@ -87,12 +87,15 @@ def play_aidungeon_2():
 
     while True:
         print("\n\n")
-        context, prompt = select_game()
+        if args.load:
+            story_manager.story = Story("")
+            story_manager.story.load_from_local(args.load)
+        else:
+            context, prompt = select_game()
+            print("\nGenerating story...")
+            story_manager.start_new_story(prompt, context=context)
+
         console_print(instructions())
-        print("\nGenerating story...")
-
-        story_manager.start_new_story(prompt, context=context)
-
         console_print(str(story_manager.story))
         while True:
             sys.stdin.flush()
@@ -223,5 +226,6 @@ if __name__ == '__main__':
     args.add_argument("--top_p", type=float, default=0.6)
     args.add_argument("--temp", type=float, default=0.7)
     args.add_argument("--penalty", type=float, default=0.15, help="penalty for repeated tokens")
+    args.add_argument("--load", type=str, default=0.15, help="id to load")
     args = args.parse_args()
     play_aidungeon_2()

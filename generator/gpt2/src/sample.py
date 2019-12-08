@@ -3,7 +3,7 @@ import math
 from generator.gpt2.src import model
 
 
-def penalize_used(logits, output):
+def penalize_used(logits, output, penalty: float):
     # output has shape (1, len) and type int32 - ASSUMES batchsize 1
     # NEED TO penalize all output because the model likes to repeat the input
     output = output[0]
@@ -20,7 +20,7 @@ def penalize_used(logits, output):
     y, _ = tf.unique(output[::-1])  # y is the unique tokens, starting from most recent
     len_y = tf.cast(tf.shape(y)[0], dtype=tf.float32)
     # Invariant: previous token is weight 1
-    weights = tf.range(len_y * 2 + 1, len_y + 1, delta=-1, dtype=tf.float32) * (.2 / len_y / 2)
+    weights = tf.range(len_y * 2 + 1, len_y + 1, delta=-1, dtype=tf.float32) * (penalty / len_y / 2)
     penalties = tf.scatter_nd(tf.expand_dims(y, 1), weights, [n_vocab])
     return logits * tf.expand_dims(1 - penalties, 0)
 
@@ -63,7 +63,7 @@ def top_p_logits(logits, p):
 
 
 def sample_sequence(hparams, length, start_token=None, batch_size=None, context=None,
-                    temperature=1, top_k=None, top_p=None):
+                    temperature=1, top_k=None, top_p=None, penalty=0):
     if start_token is None:
         assert context is not None, 'Specify exactly one of start_token and context!'
     else:
@@ -89,7 +89,8 @@ def sample_sequence(hparams, length, start_token=None, batch_size=None, context=
                 samples = tf.expand_dims(tf.argmax(logits, axis=-1, output_type=tf.int32), axis=-1)
             else:
                 logits = logits / tf.to_float(temperature)
-                logits = penalize_used(logits, output)
+                if penalty > 0:
+                    logits = penalize_used(logits, output, penalty)
                 if top_k is not None:
                     logits = top_k_logits(logits, k=top_k)
                 if top_p is not None:

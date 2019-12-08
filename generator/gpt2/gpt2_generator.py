@@ -12,11 +12,12 @@ import json
 
 class GPT2Generator:
 
-    def __init__(self, generate_num=120, temperature=0.4, top_k=40, top_p=0.9):
+    def __init__(self, generate_num=120, temperature=0.4, top_k=None, top_p=0.9, penalty=.2):
         self.generate_num = generate_num
         self.temp = temperature
         self.top_k = top_k
         self.top_p = top_p
+        self.penalty = penalty
 
         self.model_name = "model_v5"
         self.model_dir = "generator/gpt2/models"
@@ -42,7 +43,7 @@ class GPT2Generator:
             hparams=hparams, length=self.generate_num,
             context=self.context,
             batch_size=self.batch_size,
-            temperature=temperature, top_k=top_k, top_p=top_p
+            temperature=temperature, top_k=top_k, top_p=top_p, penalty=penalty
         )
         self.top_output = sample.sample_sequence(
             hparams=hparams, length=self.generate_num,
@@ -61,20 +62,3 @@ class GPT2Generator:
             self.context: [context_tokens]
         })[0, len(context_tokens):]
         return self.enc.decode(out)
-
-    # def generate(self, prompt, debug_print=False, use_top=False):
-    #
-    #     if debug_print:
-    #         print("*Prompt: ", repr(prompt))
-    #
-    #     for _ in range(3):
-    #         text = self.generate_raw(prompt, use_top)
-    #         if debug_print:
-    #             print("*Result: ", repr(text))
-    #
-    #         result = result_replace(text)
-    #         if len(result.strip()) > 0:
-    #             break
-    #     else:
-    #         return text
-    #     return result

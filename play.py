@@ -74,8 +74,6 @@ def play_aidungeon_2():
                   + " If you would like to disable this enter 'nosaving' for any action. This will also turn off the "
                   + "ability to save games.")
 
-    upload_story = False
-
     print("\nInitializing AI Dungeon! (This might take a few minutes)\n")
     generator = GPT2Generator(generate_num=args.len)
     story_manager = UnconstrainedStoryManager(generator, debug_print=args.debug)
@@ -86,20 +84,16 @@ def play_aidungeon_2():
     print(starter)
 
     while True:
-        if story_manager.story != None:
-            del story_manager.story
-
         print("\n\n")
         context, prompt = select_game()
         console_print(instructions())
         print("\nGenerating story...")
 
-        story_manager.start_new_story(prompt, context=context, upload_story=upload_story)
+        story_manager.start_new_story(prompt, context=context)
 
         print("\n")
         console_print(str(story_manager.story))
         while True:
-            # tcflush(sys.stdin, TCIFLUSH)
             sys.stdin.flush()
             action_raw = input("> ")
             action = action_raw.strip()
@@ -116,7 +110,6 @@ def play_aidungeon_2():
                 exit()
 
             elif action == "nosaving":
-                upload_story = False
                 story_manager.story.upload_story = False
                 console_print("Saving turned off.")
 
@@ -124,12 +117,11 @@ def play_aidungeon_2():
                 console_print(instructions())
 
             elif action == "save":
-                if upload_story:
-                    id = story_manager.story.save_to_storage()
-                    console_print("Game saved.")
-                    console_print("To load the game, type 'load' and enter the following ID: " + id)
-                else:
-                    console_print("Saving has been turned off. Cannot save.")
+                save_id = story_manager.story.save_to_storage()
+                console_print("Game saved.")
+                console_print("To load the game, type 'load' and enter the following ID: " + save_id)
+                # else:
+                #     console_print("Saving has been turned off. Cannot save.")
 
             elif action == "load":
                 load_ID = input("What is the ID of the saved game?")

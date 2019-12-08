@@ -39,10 +39,9 @@ class Story:
         """keep this many action-result pairs as context"""
 
     def __del__(self):
-        if self.upload_story:
-            self.save_to_storage()
-            console_print("Game saved.")
-            console_print("To load the game, type 'load' and enter the following ID: " + self.uuid)
+        self.save_to_storage()
+        console_print("Game saved.")
+        console_print("To load the game, type 'load' and enter the following ID: " + self.uuid)
 
     def init_from_dict(self, story_dict):
         self.story_start = story_dict["story_start"]
@@ -128,9 +127,9 @@ class Story:
         f = open(file_name, "w")
         f.write(story_json)
         f.close()
-
-        FNULL = open(os.devnull, 'w')
-        p = Popen(['gsutil', 'cp', file_name, 'gs://aidungeonstories'], stdout=FNULL, stderr=subprocess.STDOUT)
+        if self.upload_story:
+            FNULL = open(os.devnull, 'w')
+            p = Popen(['gsutil', 'cp', file_name, 'gs://aidungeonstories'], stdout=FNULL, stderr=subprocess.STDOUT)
         return self.uuid
 
     def load_from_storage(self, story_id):

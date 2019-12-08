@@ -70,19 +70,13 @@ class Story:
     def latest_result(self, num_history=None):
         if num_history is None:
             num_history = self.memory
-        mem_texts = itertools.chain.from_iterable(zip(self.actions[-num_history + 1:], self.results[-num_history:]))
+        mem_texts = itertools.chain.from_iterable(zip(self.actions[-num_history:][1:], self.results[-num_history:]))
         # result = self.context if len(self.results) > num_history else self.story_start
         result = "\n".join((self.context, *mem_texts))
         return result
 
     def __str__(self):
         return self.latest_result(num_history=99999999)
-        # story_list = [self.story_start]
-        # for i in range(len(self.results)):
-        #     story_list.append(self.actions[i])
-        #     story_list.append(self.results[i])
-        #
-        # return "".join(story_list)
 
     def pop(self, *args):
         self.actions.pop(*args)

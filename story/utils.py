@@ -123,7 +123,7 @@ def cut_trailing_sentence(text):
         text = text[:et_token]
     act_token = text.find(">")
     if act_token != -1:
-        text = text[:et_token]
+        text = text[:act_token]
 
     last_punc = max(text.rfind('.'), text.rfind("!"), text.rfind("?"))
     # if last_punc >= 0:

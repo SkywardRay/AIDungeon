@@ -124,14 +124,14 @@ def play_aidungeon_2():
                 #     console_print("Saving has been turned off. Cannot save.")
 
             elif action == "load":
-                load_ID = input("What is the ID of the saved game?")
-                result = story_manager.story.load_from_storage(load_ID)
+                load_id = input("What is the ID of the saved game?")
+                result = story_manager.story.load_from_storage(load_id)
                 console_print("\nLoading Game...\n")
                 console_print(result)
 
             elif len(action.split(" ")) == 2 and action.split(" ")[0] == "load":
-                load_ID = action.split(" ")[1]
-                result = story_manager.story.load_from_storage(load_ID)
+                load_id = action.split(" ")[1]
+                result = story_manager.story.load_from_storage(load_id)
                 console_print("\nLoading Game...\n")
                 console_print(result)
 

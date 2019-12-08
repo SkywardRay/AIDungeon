@@ -4,11 +4,12 @@ from generator.gpt2.src import model
 
 
 def penalize_used(logits, output):
-    # output has shape (1, len) and type int32
+    # output has shape (1, len) and type int32 - ASSUMES batchsize 1
     n_vocab = logits.shape[1]
-    N = tf.to_float(tf.minimum(180, output.shape[0]))  # lookback
-    weights = tf.range(1, N + 1, dtype=tf.float32) / N
-    counts = tf.math.bincount(output[0, -N:], weights=weights,
+    output = output[0, -180:]
+    N = output.shape[0]  # lookback
+    weights = tf.range(1, tf.cast(N, dtype=tf.float32) + 1, dtype=tf.float32) / tf.cast(N, dtype=tf.float32)
+    counts = tf.math.bincount(output, weights=weights,
                               minlength=n_vocab, dtype=tf.float32)
     counts = tf.expand_dims(counts, 0)
     return logits + counts * math.log(.6)

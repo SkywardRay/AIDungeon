@@ -149,7 +149,7 @@ class StoryManager:
         self.debug_print = debug_print
 
     def start_new_story(self, story_prompt, context="", game_state=None, upload_story=False):
-        block = self.generator.generate(context + story_prompt, debug_print=self.debug_print)
+        block = self.generator.generate(context + story_prompt)
         block = result_replace(block)
         self.story = Story(story_prompt + block, context=context, game_state=game_state,
                            upload_story=upload_story)

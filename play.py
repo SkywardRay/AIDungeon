@@ -75,7 +75,7 @@ def play_aidungeon_2():
                   + "ability to save games.")
 
     print("\nInitializing AI Dungeon! (This might take a few minutes)\n")
-    generator = GPT2Generator(generate_num=args.len)
+    generator = GPT2Generator(generate_num=args.len, top_k=args.top_k, top_p=args.top_p, temperature=args.temp)
     story_manager = UnconstrainedStoryManager(generator, debug_print=args.debug)
     print("\n")
 
@@ -221,6 +221,9 @@ if __name__ == '__main__':
     args.add_argument("--debug", action="store_true")
     args.add_argument("--defaults", action="store_true")
     args.add_argument("--len", type=int, default=80)
+    args.add_argument("--top_k", type=int, default=40)
+    args.add_argument("--top_p", type=float, default=.9)
+    args.add_argument("--temp", type=float, default=.4)
     # args.add_argument("--inline", action="store_true", help="inline actions")
     args = args.parse_args()
     play_aidungeon_2()

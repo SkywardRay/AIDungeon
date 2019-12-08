@@ -20,9 +20,13 @@ def penalize_used(logits, output):
     y, _ = tf.unique(output[::-1])  # y is the unique tokens, starting from most recent
     len_y = tf.cast(tf.shape(y)[0], dtype=tf.float32)
     # Invariant: previous token is weight 1
-    weights = tf.range(len_y + 1, 1, delta=-1, dtype=tf.float32) * (math.log(.3) / len_y)
+    # weights = tf.range(len_y + 1, 1, delta=-1, dtype=tf.float32) * (math.log(.3) / len_y)
+    # penalties = tf.scatter_nd(tf.expand_dims(y, 1), weights, [n_vocab])
+    # return logits + penalties
+    # Invariant: previous token is weight 1
+    weights = tf.range(len_y + 1, 1, delta=-1, dtype=tf.float32) * (.15 / len_y)
     penalties = tf.scatter_nd(tf.expand_dims(y, 1), weights, [n_vocab])
-    return logits + penalties
+    return logits * tf.expand_dims(1 - penalties, 0)
 
 
 def top_k_logits(logits, k):

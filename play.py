@@ -135,8 +135,7 @@ def play_aidungeon_2():
                 console_print(result)
 
             elif action == "print":
-                print("\nPRINTING\n")
-                print(str(story_manager.story))
+                console_print(str(story_manager.story))
 
             elif action == "revert":
 
@@ -177,6 +176,7 @@ def play_aidungeon_2():
                         action += '.'
                     if action[0:4].lower() == "say ":
                         quote = action.split(maxsplit=1)[1]
+                        quote = quote[0].upper() + quote[1:]
                         action = f'say "{quote}"'
                     if action[0:2].lower() not in ['i ', "i'"]:  # don't input i
                         action = "I " + action

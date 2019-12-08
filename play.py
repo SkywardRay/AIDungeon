@@ -101,7 +101,8 @@ def play_aidungeon_2():
         while True:
             # tcflush(sys.stdin, TCIFLUSH)
             sys.stdin.flush()
-            action = input("> ").strip()
+            action_raw = input("> ")
+            action = action_raw.strip()
             if action == "restart":
                 rating = input("Please rate the story quality from 1-10: ")
                 rating_float = float(rating)
@@ -157,15 +158,15 @@ def play_aidungeon_2():
                 console_print(story_manager.story.results[-1])
                 continue
 
-            elif len(action.split()) >= 2 and action.split()[0] in ["query", "queryy"]:
-                queryy, question = action.split(maxsplit=1)
+            elif len(action.split()) >= 2 and action.split()[0] in ["query", "queryi"]:
+                query_type, question = action.split(maxsplit=1)
                 if question[-1] != '?':
                     question += '?'
-                if queryy == "queryy":
+                if query_type == "query":  # default
                     question = first_to_second_person(question)
                 else:
                     question = capitalize_i(question)
-                question = "\nQ: " + question + "\n"
+                question = "\n> Q: " + question + "\nA: "
                 console_print(question)
                 answer = story_manager.generate_result(question, use_top=True)
                 answer = answer.strip().split("\n")[0]  # gonna be a bunch of alternating Q: A: lines
@@ -174,7 +175,7 @@ def play_aidungeon_2():
                 console_print(answer)
 
             elif len(action.split()) >= 2 and action.split()[0] in ["debug", "debugt"]:
-                debugt, action = action.split(maxsplit=1)
+                debugt, action = action_raw.split(maxsplit=1)
                 action = bytes(action, "utf-8").decode("unicode_escape")
                 # action = action.replace("\\n", "\n")  # experiment with newlines
                 answer = story_manager.generate_result(action, use_top=debugt == "debugt")

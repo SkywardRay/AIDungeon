@@ -65,14 +65,12 @@ class GPT2Generator:
     def generate(self, prompt, debug_print=False, use_top=False):
 
         if debug_print:
-            print("******DEBUG******")
             print("Prompt is: ", repr(prompt))
 
         for _ in range(5):
             text = self.generate_raw(prompt, use_top)
             if debug_print:
                 print("Generated result is: ", repr(text))
-                print("******END DEBUG******")
 
             result = result_replace(text)
             if len(result.strip()) > 0:

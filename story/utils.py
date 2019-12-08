@@ -84,9 +84,9 @@ def split_first_sentence(text):
 
 
 def cut_trailing_action(text):
-    lines = text.split("\n")
+    lines = text.rsplit("\n", 1)
     last_line = lines[-1]
-    if "you ask" in last_line or "You ask" in last_line or "you say" in last_line or "You say" in last_line:
+    if re.search("you (ask|say)", last_line.lower()):
         text = "\n".join(lines[0:-1])
     return text
 
@@ -118,18 +118,15 @@ def result_replace(result):
 
 def cut_trailing_sentence(text):
     text = standardize_punctuation(text)
-    last_punc = max(text.rfind('.'), text.rfind("!"), text.rfind("?"))
-    if last_punc <= 0:
-        last_punc = len(text) - 1
-
-    et_token = text.find("<|")
-    if et_token > 0:
-        last_punc = min(last_punc, et_token - 1)
-
+    et_token = text.find("<")
+    if et_token != -1:
+        text = text[:et_token]
     act_token = text.find(">")
-    if act_token > 0:
-        last_punc = min(last_punc, act_token - 1)
+    if act_token != -1:
+        text = text[:et_token]
 
+    last_punc = max(text.rfind('.'), text.rfind("!"), text.rfind("?"))
+    # if last_punc >= 0:
     text = text[:last_punc + 1]
 
     text = cut_trailing_quotes(text)
@@ -245,10 +242,7 @@ def first_to_second_person(text):
     for pair in first_to_second_mappings:
         variations = mapping_variation_pairs(pair)
         for variation in variations:
-            # txt = text
             text = replace_outside_quotes(text, variation[0], variation[1])
-            # if txt != text:
-            #     print(variation, txt, text)
 
     return capitalize_first_letters(text[1:])
 

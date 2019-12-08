@@ -143,10 +143,7 @@ def is_first_person(text):
             matches = re.findall(reg_expr, text)
             count += len(matches)
 
-    if count > 3:
-        return True
-    else:
-        return False
+    return count > 3  # why 3??
 
 
 def is_second_person(text):
@@ -158,10 +155,7 @@ def is_second_person(text):
             matches = re.findall(reg_expr, text)
             count += len(matches)
 
-    if count > 3:
-        return True
-    else:
-        return False
+    return count > 3
 
 
 def capitalize(word):
@@ -228,10 +222,7 @@ def standardize_punctuation(text):
 
 
 def replace_outside_quotes(text, current_word, repl_word):
-    # text = standardize_punctuation(text)
-
     reg_expr = re.compile(f"(?<=\s){current_word}(?=[\s,.?!]|$)" + '(?=([^"]*"[^"]*")*[^"]*$)')
-
     output = reg_expr.sub(repl_word, text)
     return output
 
@@ -269,7 +260,6 @@ def second_to_first_person(text):
 def mapping_variation_pairs(mapping):
     mapping_list = [mapping]
 
-    # mapping_list.append((" " + mapping[0] + " ", " " + mapping[1] + " "))
     def maybe_map(mp, mp2=mapping[1]):
         for x in mapping_list:
             if x[0] == mp:
@@ -287,15 +277,3 @@ def mapping_variation_pairs(mapping):
     #     mapping_list.append(("(?<=\s)" + mapping[0] + "(?=[\s,.?!])", mapping[1]))
 
     return mapping_list
-# if __name__ == '__main__':
-#     result = 'The only thing they can tell you is, "We have nowhere else to…"'
-#     result = result.replace('."', '".')
-#     result = result.replace("#", "")
-#     result = result.replace("*", "")
-#     result = first_to_second_person(result)
-#     # result = remove_profanity(result)
-#
-#     while ("\n \n \n " in result):
-#         result = result.replace("\n \n \n ", "\n \n ")
-#
-#     print(result)

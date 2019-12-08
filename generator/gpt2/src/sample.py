@@ -16,17 +16,6 @@ def penalize_used(logits, output):
     # return logits + counts * math.log(.3)
     # return logits * tf.math.pow(.85, counts)
 
-    # I want to change the indices of logits wherever the index is found in output
-    # change_tensor = tf.zeros_like(logits, dtype=logits.dtype)
-    # unique = tf.unique(output[0][-20:])[0]  # unique values of output
-    # ones = tf.ones_like(unique, dtype=unique.dtype)
-    # indices = tf.expand_dims(unique, 1)
-    #
-    # updates = tf.scatter_nd(indices, ones, [logits.shape[1]])
-    #
-    # bool_tensor = tf.expand_dims(tf.cast(updates, tf.bool), 0)
-    # return tf.compat.v1.where(        bool_tensor,        logits * .85,    logits)
-
 
 def top_k_logits(logits, k):
     if k == 0:

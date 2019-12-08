@@ -158,18 +158,15 @@ def play_aidungeon_2():
                     question = first_to_second_person(question)
                 else:
                     question = capitalize_i(question)
-                question = "\n> Q: " + question + "\nA: "
+                question = "\n> Q: " + question + "\n"
                 console_print(question)
                 answer = story_manager.generate_result(question, use_top=True)
-                answer = answer.strip().split("\n")[0]  # gonna be a bunch of alternating Q: A: lines
-                # if answer[:3] == "A: ":
-                #     answer = answer[3:]
+                answer = answer.strip().split("\n", 1)[0]  # gonna be a bunch of alternating Q: A: lines
                 console_print(answer)
 
             elif len(action.split()) >= 2 and action.split()[0] in ["debug", "debugt"]:
                 debugt, action = action_raw.split(maxsplit=1)
                 action = bytes(action, "utf-8").decode("unicode_escape")
-                # action = action.replace("\\n", "\n")  # experiment with newlines
                 answer = story_manager.generate_result(action, use_top=debugt == "debugt")
                 console_print(answer)
             else:
@@ -177,7 +174,7 @@ def play_aidungeon_2():
                     result = story_manager.more_text()
                 else:
                     action = action[0].lower() + action[1:]
-                    if action[0] == '"':  # TODO repeat say
+                    if action[0] == '"':
                         action = f'say {action}'
                     elif action[0:4].lower() == "say ":
                         quote = action.split(maxsplit=1)[1]

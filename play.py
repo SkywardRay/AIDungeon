@@ -55,7 +55,7 @@ def select_game():
 def instructions():
     text = "\nAI Dungeon 2 Instructions:"
     text += '\n Enter actions starting with a verb ex. "go to the tavern" or "attack the orc."'
-    text += '\n To speak enter \'say "(thing you want to say)"\' or just "(thing you want to say)" (with quotes!!)'
+    text += '\n To speak enter \'say (thing you want to say)\' (without quotes)'
     text += '\n\nThe following commands can be entered for any action: '
     text += '\n  "revert"   Reverts the last action allowing you to pick a different action.'
     text += '\n  "quit"     Quits the game and saves'
@@ -171,18 +171,14 @@ def play_aidungeon_2():
                     result = story_manager.more_text()
                 else:
                     action = action[0].lower() + action[1:]
-                    if action[0] == '"':
-                        action = f'say {action}'
+                    if action[-1] not in '.?!':
+                        action += '.'
                     elif action[0:4].lower() == "say ":
                         quote = action.split(maxsplit=1)[1]
-                        if quote[0] != '"':
-                            action = f'say "{quote}"'
+                        action = f'say "{quote}"'
                     if action[0:2].lower() not in ['i ', "i'"]:  # don't input i
                         action = "I " + action
                     action = first_to_second_person(action)
-                    if action[-1] not in [".", "?", "!"]:
-                        action = action + "."
-                        # action = f"\n> {action}\n"
 
                     console_print(action)
                     result = story_manager.act(action)

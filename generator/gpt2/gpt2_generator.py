@@ -55,26 +55,26 @@ class GPT2Generator:
         ckpt = tf.train.latest_checkpoint(os.path.join(models_dir, self.model_name))
         saver.restore(self.sess, ckpt)
 
-    def generate_raw(self, prompt, use_top: bool):
+    def generate(self, prompt, use_top: bool):
         context_tokens = self.enc.encode(prompt)
         out = self.sess.run(self.top_output if use_top else self.output, feed_dict={
             self.context: [context_tokens]
         })[0, len(context_tokens):]
         return self.enc.decode(out)
 
-    def generate(self, prompt, debug_print=False, use_top=False):
-
-        if debug_print:
-            print("*Prompt: ", repr(prompt))
-
-        for _ in range(3):
-            text = self.generate_raw(prompt, use_top)
-            if debug_print:
-                print("*Result: ", repr(text))
-
-            result = result_replace(text)
-            if len(result.strip()) > 0:
-                break
-        else:
-            return text
-        return result
+    # def generate(self, prompt, debug_print=False, use_top=False):
+    #
+    #     if debug_print:
+    #         print("*Prompt: ", repr(prompt))
+    #
+    #     for _ in range(3):
+    #         text = self.generate_raw(prompt, use_top)
+    #         if debug_print:
+    #             print("*Result: ", repr(text))
+    #
+    #         result = result_replace(text)
+    #         if len(result.strip()) > 0:
+    #             break
+    #     else:
+    #         return text
+    #     return result

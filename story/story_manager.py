@@ -150,7 +150,7 @@ class StoryManager:
 
     def start_new_story(self, story_prompt, context="", game_state=None, upload_story=False):
         block = self.generator.generate(context + story_prompt, debug_print=self.debug_print)
-        block = cut_trailing_sentence(block)
+        block = result_replace(block)
         self.story = Story(story_prompt + block, context=context, game_state=game_state,
                            upload_story=upload_story)
         return self.story
@@ -188,8 +188,22 @@ class UnconstrainedStoryManager(StoryManager):
         self.story.results[-1] += more_result
         return more_result
 
-    def generate_result(self, action, use_top=False):  # non mutating
-        return self.generator.generate(self.story_context() + action, debug_print=self.debug_print, use_top=use_top)
+    def generate_result(self, action, use_top=False, postprocess=True):  # non mutating
+        prompt = self.story_context() + action
+        if self.debug_print:
+            print("*Prompt: ", repr(prompt))
+
+        for _ in range(3):
+            text = self.generator.generate(prompt, use_top)
+            if self.debug_print:
+                print("*Result: ", repr(text))
+
+            result = result_replace(text) if postprocess else text
+            if len(result.strip()) > 0:
+                break
+        else:
+            return text
+        return result
 
 # class ConstrainedStoryManager(StoryManager):
 #

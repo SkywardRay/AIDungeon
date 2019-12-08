@@ -13,7 +13,7 @@ class AIPlayer:
         self.generator = generator
 
     def get_action(self, prompt):
-        return self.generator.generate_raw(prompt)
+        return self.generator.generate(prompt)
 
 def play_dm():
 

@@ -157,14 +157,14 @@ def play_aidungeon_2():
                     question = capitalize_i(question)
                 question = "\n> Q: " + question + "\nA:"  # Adding the space after A: messes up BPE, for ex. when asking for my name.
                 console_print(question)
-                answer = story_manager.generate_result(question, use_top=True)
+                answer = story_manager.generate_result(question, use_top=True, postprocess=False)
                 answer = answer.strip().split("\n", 1)[0]  # gonna be a bunch of alternating Q: A: lines
                 console_print(answer)
 
             elif len(action.split()) >= 2 and action.split()[0] in ["debug", "debugt"]:
                 debugt, action = action_raw.split(maxsplit=1)
                 action = bytes(action, "utf-8").decode("unicode_escape")
-                answer = story_manager.generate_result(action, use_top=debugt == "debugt")
+                answer = story_manager.generate_result(action, use_top=debugt == "debugt", postprocess=False)
                 console_print(answer)
             else:
                 if action == "":

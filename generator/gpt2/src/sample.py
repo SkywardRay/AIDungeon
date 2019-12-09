@@ -17,7 +17,7 @@ def penalize_used(logits, output, penalty: float):
     # return tf.compat.v1.where(tf.cast(counts, dtype=tf.bool), logits * .85, logits)
     # return logits + counts * math.log(.6)  # A token is p times as likely to be repeated consecutively
 
-    y, _ = tf.unique(output[:-200:-1])  # y is the unique tokens, starting from most recent
+    y, _ = tf.unique(output[:-100:-1])  # y is the unique tokens, starting from most recent
     len_y = tf.cast(tf.shape(y)[0], dtype=tf.float32)
     # Invariant: previous token is weight 1
     # t = 1
@@ -90,12 +90,12 @@ def sample_sequence(hparams, length, start_token=None, batch_size=None, context=
                 samples = tf.expand_dims(tf.argmax(logits, axis=-1, output_type=tf.int32), axis=-1)
             else:
                 logits = logits / tf.to_float(temperature)
-                if penalty > 0:
-                    logits = penalize_used(logits, output, penalty)
-                if top_k is not None:
-                    logits = top_k_logits(logits, k=top_k)
                 if top_p is not None:
                     logits = top_p_logits(logits, p=top_p)
+                if top_k is not None:
+                    logits = top_k_logits(logits, k=top_k)
+                if penalty > 0:
+                    logits = penalize_used(logits, output, penalty)
                 samples = tf.random.categorical(logits, num_samples=1, dtype=tf.int32)
             return [
                 next_outputs['presents'] if past is None else tf.concat([past, next_outputs['presents']], axis=-2),

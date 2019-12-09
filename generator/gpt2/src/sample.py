@@ -17,11 +17,11 @@ def penalize_used(logits, output, penalty: float):
     # return tf.compat.v1.where(tf.cast(counts, dtype=tf.bool), logits * .85, logits)
     # return logits + counts * math.log(.6)  # A token is p times as likely to be repeated consecutively
 
-    y, _ = tf.unique(output[::-1])  # y is the unique tokens, starting from most recent
+    y, _ = tf.unique(output[:-200:-1])  # y is the unique tokens, starting from most recent
     len_y = tf.cast(tf.shape(y)[0], dtype=tf.float32)
     # Invariant: previous token is weight 1
     # t = 1
-    weights = tf.range(len_y + 1, 1, delta=-1, dtype=tf.float32) * (penalty / len_y / len_y * 2)
+    weights = tf.range(len_y + 1, 1, delta=-1, dtype=tf.float32) * (penalty / len_y)
     penalties = tf.scatter_nd(tf.expand_dims(y, 1), weights, [n_vocab])
     return logits * tf.expand_dims(1 - penalties, 0)
 

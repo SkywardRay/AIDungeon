@@ -32,7 +32,7 @@ def top_k_logits(logits, k):
         min_values = values[:, -1, tf.newaxis]
         return tf.where(
             logits < min_values,
-            tf.ones_like(logits, dtype=logits.dtype) * -1e10,
+            -1e10,
             logits,
         )
 
@@ -58,7 +58,7 @@ def top_p_logits(logits, p):
     min_values = tf.gather_nd(sorted_logits, indices)
     return tf.where(
         logits < min_values,
-        tf.ones_like(logits) * -1e10,
+        -1e10,
         logits,
     )
 
@@ -92,7 +92,7 @@ def sample_sequence(hparams, length, start_token=None, batch_size=None, context=
                 logits = logits / tf.to_float(temperature)
                 if top_p is not None:
                     logits = top_p_logits(logits, p=top_p)
-                if top_k is not None:
+                if top_k is not None:  # don't use both
                     logits = top_k_logits(logits, k=top_k)
                 if penalty > 0:
                     logits = penalize_used(logits, output, penalty)

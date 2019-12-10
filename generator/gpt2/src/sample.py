@@ -32,7 +32,7 @@ def top_k_logits(logits, k):
         min_values = values[:, -1, tf.newaxis]
         return tf.where(
             logits < min_values,
-            -1e10,
+            tf.constant(-1e10, dtype=logits.dtype, shape=logits.shape),
             logits,
         )
 
@@ -58,7 +58,7 @@ def top_p_logits(logits, p):
     min_values = tf.gather_nd(sorted_logits, indices)
     return tf.where(
         logits < min_values,
-        -1e10,
+        tf.constant(-1e10, dtype=logits.dtype, shape=logits.shape),
         logits,
     )
 
